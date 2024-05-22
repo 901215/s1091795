@@ -3,13 +3,19 @@ package com.example.s1091795
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -122,6 +128,7 @@ fun Main() {
 
 @Composable
 fun FirstScreen(navController: NavController){
+    Animation()
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = "簡介",
@@ -144,6 +151,66 @@ fun SecondScreen(navController: NavController) {
 
     }
 }
+
+@Composable
+fun Animation() {
+    var showFirstImage by remember { mutableStateOf(true) } // 第一张图片显示状态
+    var showSecondImage by remember { mutableStateOf(false) } // 第二张图片显示状态
+
+    Column {
+        Text(
+            text = if (showFirstImage) "關於App作者\n" else "瑪利亞基金會服務總覽\n",
+            modifier = Modifier.fillMaxWidth()
+        )
+        // 第一张图片
+        AnimatedVisibility(
+            visible = showFirstImage,
+            enter = fadeIn(
+                initialAlpha = 0.1f,
+                animationSpec = tween(durationMillis = 3000)
+            ),
+            exit = fadeOut(
+                animationSpec = tween(durationMillis = 3000)
+            )
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.photo),
+                contentDescription = "作者"
+            )
+        }
+
+        // 第二张图片
+        AnimatedVisibility(
+            visible = showSecondImage,
+            enter = fadeIn(
+                initialAlpha = 0.1f,
+                animationSpec = tween(durationMillis = 3000)
+            ),
+            exit = fadeOut(
+                animationSpec = tween(durationMillis = 3000)
+            )
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.service), // 替换成你的第二张图片资源
+                contentDescription = "第二张图片"
+            )
+        }
+
+        // 按钮切换图片显示状态
+        Button(
+            onClick = {
+                showFirstImage = !showFirstImage
+                showSecondImage = !showSecondImage
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (showFirstImage) Text(text = "服務總覽")
+            else Text(text = "作者:資管四B周立哲")
+        }
+    }
+}
+
+
 
 @Preview(showBackground = true)
 @Composable

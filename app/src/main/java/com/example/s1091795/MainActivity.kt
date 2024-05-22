@@ -1,5 +1,7 @@
 package com.example.s1091795
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,7 +11,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
@@ -34,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -141,16 +146,74 @@ fun FirstScreen(navController: NavController){
 
 @Composable
 fun SecondScreen(navController: NavController) {
-    Column(modifier = Modifier.fillMaxSize()){
-        Text(
-            text = "主要機構",
-            fontFamily = FontFamily(Font(R.font.kai)),
-            fontSize = 25.sp,
-            color = Color.Red
-        )
+    var buttonClicked by remember { mutableStateOf(false) } // 记录按钮点击状态
 
+    Column(modifier = Modifier.fillMaxSize()) {
+        // 水平排列的两个按钮
+        Row(Modifier.fillMaxWidth()) {
+            Button(
+                onClick = {
+                    // 点击按钮时修改按钮点击状态
+                    buttonClicked = true
+                },
+                modifier = Modifier.weight(1f) // 将按钮1设置为填充行的一半宽度
+            ) {
+                Text(text = "按钮1")
+            }
+            Button(
+                onClick = { /* 点击按钮2时的操作 */ },
+                modifier = Modifier.weight(1f) // 将按钮2设置为填充行的一半宽度
+            ) {
+                Text(text = "按钮2")
+            }
+        }
+
+        // 根据按钮点击状态显示不同的文本
+        if (buttonClicked) {
+            Text(
+                text = "台中市愛心家園\n" +
+                        "經市政府公開評選後，委托瑪利亞基金會經營管理，於91年啟用，整棟建築物有四個樓層，\n" +
+                        "目前開辦就醫、就養、就學、就業四大領域的十項業務，提供身心障礙者全方位的服務。\n",
+                fontSize = 16.sp
+            )
+            Text(
+                text = "長按以下圖片，可以觀看愛心家園地圖\n",
+                color = Color.Blue,
+                fontSize = 16.sp
+            )
+
+
+            // 图片部分
+            Image(
+                painter = painterResource(id = R.drawable.lovehome),
+                contentDescription = "Love Home",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        openGoogleMap()
+                        // 在此处添加打开 Google Map 的代码
+                    }
+            )
+        }
     }
 }
+
+@Composable
+fun ProvideContext(content: @Composable () -> Unit) {
+    val context = LocalContext.current
+    content()
+}
+fun openGoogleMap() {
+    val gmmIntentUri: Uri = Uri.parse("geo:0,0?q=台中市南屯區東興路一段450號")
+    val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+    mapIntent.setPackage("com.google.android.apps.maps")
+    // 检查是否有能够处理这个 Intent 的应用
+
+
+    }
+
+
+
 
 @Composable
 fun Animation() {
